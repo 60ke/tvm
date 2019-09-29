@@ -1,0 +1,14 @@
+mod flow { # ! [ doc = " Flow control instructions." ] use :: Memory ; use bigint :: { U256 , M256 } ; use super :: State ; use patch :: Patch ; 
+pub fn sload < M : Memory + Default , P : Patch > ( state : & mut State < M , P > ) {
+     let index : U256 = state . stack . pop ( ) . unwrap ( ) . into ( ) ; 
+     let value = state . account_state . storage_read ( state . context . address , index ) . unwrap ( ) ; 
+     { :: std :: io :: _print ( :: core :: fmt :: Arguments :: new_v1 ( & [ "push state:,value:" , "\n" ] , & match ( & value , ) { ( arg0 , ) => [ :: core :: fmt :: ArgumentV1 :: new ( arg0 , :: core :: fmt :: Debug :: fmt ) ] , } ) ) ; } ; 
+     state . stack . push ( value ) . unwrap ( ) ; 
+    } 
+pub fn sstore < M : Memory + Default , P : Patch > ( state : & mut State < M , P > ) { 
+    let index : U256 = state . stack . pop ( ) . unwrap ( ) . into ( ) ; 
+    let value : M256 = state . stack . pop ( ) . unwrap ( ) . into ( ) ; state . account_state . storage_write ( state . context . address , index , value ) . unwrap ( ) ; }
+
+pub fn mload < M : Memory + Default , P : Patch > ( state : & mut State < M , P > ) { let index : U256 = state . stack . pop ( ) . unwrap ( ) . into ( ) ; let value = state . memory . read ( index ) ; state . stack . push ( value ) . unwrap ( ) ; } 
+pub fn mstore < M : Memory + Default , P : Patch > ( state : & mut State < M , P > ) { let index : U256 = state . stack . pop ( ) . unwrap ( ) . into ( ) ; let value : M256 = state . stack . pop ( ) . unwrap ( ) . into ( ) ; state . memory . write ( index , value ) . unwrap ( ) ; } 
+pub fn mstore8 < M : Memory + Default , P : Patch > ( state : & mut State < M , P > ) { let index : U256 = state . stack . pop ( ) . unwrap ( ) . into ( ) ; let value : M256 = state . stack . pop ( ) . unwrap ( ) . into ( ) ; state . memory . write_raw ( index , ( value . 0 . low_u32 ( ) & 0xFF ) as u8 ) . unwrap ( ) ; } }
